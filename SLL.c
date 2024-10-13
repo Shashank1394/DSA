@@ -18,6 +18,7 @@ void deleteFirst();
 void deleteLast();
 void deleteAt();
 void display();
+void search();
 
 int main() {
     int ch;
@@ -30,7 +31,8 @@ int main() {
         printf("\n5. Delete Last");
         printf("\n6. Delete At Location");
         printf("\n7. Display");
-        printf("\n8. Exit");
+        printf("\n8. Search");
+        printf("\n9. Exit");
         printf("\nEnter your choice: ");
         scanf("%d", &ch);
 
@@ -42,7 +44,8 @@ int main() {
             case 5: deleteLast(); break;
             case 6: deleteAt(); break;
             case 7: display(); break;
-            case 8: printf("\nExiting..."); exit(0);
+            case 8: search(); break;
+            case 9: printf("\nExiting..."); exit(0);
             default: printf("\nInvalid input! Try again...");
         }
     } return 0;
@@ -167,5 +170,26 @@ void display() {
         for(curr = head; curr != NULL; curr = curr->next)
             printf("%d -> ", curr->data);
         printf("NULL");
+    }
+}
+
+void search() {
+    if(head == NULL) {
+        printf("\nList is empty.");
+    } else {
+        int search;
+        printf("\nEnter data to search: ");
+        scanf("%d", &search);
+        int i = 0;
+        curr = head;
+        while(curr != NULL) {
+            if(curr->data == search) {
+                printf("%d found at index %d.", search, i);
+                return;
+            } else {
+                curr = curr->next;
+                i++;
+            }
+        }
     }
 }
