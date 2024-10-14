@@ -1,11 +1,11 @@
-// Singly Linked List
+// Doubly Linked List
 
 #include <stdio.h>
 #include <stdlib.h>
 
 struct node {
     int data;
-    struct node *next;
+    struct node *next, *prev;
 };
 
 struct node *head = NULL;
@@ -23,7 +23,7 @@ void search();
 int main() {
     int ch;
     while(1) {
-        printf("\n\n- Singly Linked List -");
+        printf("\n\n- Doubly Linked List -");
         printf("\n1. Insert First");
         printf("\n2. Insert Last");
         printf("\n3. Insert At Location");
@@ -53,8 +53,8 @@ int main() {
 
 void insertFirst() {
     struct node *newnode = (struct node *)malloc(sizeof(struct node));
-    newnode->next = NULL;
-    
+    newnode->prev = newnode->next = NULL;
+
     printf("\nEnter the data: ");
     scanf("%d", &newnode->data);
 
@@ -63,6 +63,7 @@ void insertFirst() {
         printf("List not found! Created a new list.");
     } else {
         newnode->next = head;
+        head->prev = newnode;
         head = newnode;
         printf("New node added successfully at the beginning of the list.");
     }
@@ -79,10 +80,11 @@ void insertLast() {
         head = newnode;
         printf("List not found! Created a new list.");
     } else {
-        curr = head;
-        while(curr->next != NULL)
+        curr=head;
+        while(curr->next != NULL) 
             curr = curr->next;
         curr->next = newnode;
+        newnode->prev = curr;
         printf("New node added successfully at the end of the list.");
     }
 }
@@ -103,7 +105,9 @@ void insertAt() {
         for(int i = 0; i < n - 1; i++)
             curr = curr->next;
         newnode->next = curr->next;
+        curr->next->prev = newnode;
         curr->next = newnode;
+        newnode->prev = curr;
         printf("New node added successfully at index %d.", n);
     }
 }
@@ -111,13 +115,14 @@ void insertAt() {
 void deleteFirst() {
     if(head == NULL) {
         printf("\nList not found!");
-    } else if(head->next == NULL) {
+    } else if (head->next == NULL) {
         free(head);
         head = NULL;
         printf("\nFirst and only node deleted.");
     } else {
         curr = head;
         head = head->next;
+        head->prev = NULL;
         free(curr);
         printf("\nFirst node deleted.");
     }
@@ -136,7 +141,7 @@ void deleteLast() {
             curr = curr->next;
         free(curr->next);
         curr->next = NULL;
-        printf("Last node is deleted.");
+        printf("\nLast node is deleted.");
     }
 }
 
@@ -155,13 +160,19 @@ void deleteAt() {
                 if(curr->next == NULL) {
                     printf("List index out of bounds.\n");
                     return;
-                } 
+                }
                 curr = curr->next;
             }
             struct node *temp = curr->next;
+            if(temp == NULL) {
+                printf("Index out of bounds.\n");
+                return;
+            }
+            if(temp->next != NULL)
+                temp->next->prev = curr;
             curr->next = temp->next;
             free(temp);
-            printf("Deleted node at index %d.", n);
+            printf("Deleted node at index %d", n);
         }
     }
 }
