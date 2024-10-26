@@ -2,9 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct node {
-    int data;
+    char book_name[100];
     struct node *next;
 };
 
@@ -19,11 +20,12 @@ void deleteLast();
 void deleteAt();
 void display();
 void search();
+void countBooks();
 
 int main() {
     int ch;
     while(1) {
-        printf("\n\n- Singly Linked List -");
+        printf("\n\n- Book List -");
         printf("\n1. Insert First");
         printf("\n2. Insert Last");
         printf("\n3. Insert At Location");
@@ -32,7 +34,8 @@ int main() {
         printf("\n6. Delete At Location");
         printf("\n7. Display");
         printf("\n8. Search");
-        printf("\n9. Exit");
+        printf("\n9. Count Books");
+        printf("\n10. Exit");
         printf("\nEnter your choice: ");
         scanf("%d", &ch);
 
@@ -45,18 +48,22 @@ int main() {
             case 6: deleteAt(); break;
             case 7: display(); break;
             case 8: search(); break;
-            case 9: printf("\nExiting..."); exit(0);
+            case 9: countBooks(); break;
+            case 10: printf("\nExiting..."); exit(0);
             default: printf("\nInvalid input! Try again...");
         }
-    } return 0;
+    } 
+    return 0;
 }
 
 void insertFirst() {
     struct node *newnode = (struct node *)malloc(sizeof(struct node));
     newnode->next = NULL;
-    
-    printf("\nEnter the data: ");
-    scanf("%d", &newnode->data);
+
+    printf("\nEnter the book name: ");
+    getchar();  // Clear newline buffer
+    fgets(newnode->book_name, 100, stdin);
+    newnode->book_name[strcspn(newnode->book_name, "\n")] = 0; // Remove trailing newline
 
     if(head == NULL) {
         head = newnode;
@@ -64,17 +71,19 @@ void insertFirst() {
     } else {
         newnode->next = head;
         head = newnode;
-        printf("New node added successfully at the beginning of the list.");
+        printf("New book added successfully at the beginning of the list.");
     }
 }
 
 void insertLast() {
     struct node *newnode = (struct node *)malloc(sizeof(struct node));
     newnode->next = NULL;
-    
-    printf("\nEnter the data: ");
-    scanf("%d", &newnode->data);
-    
+
+    printf("\nEnter the book name: ");
+    getchar();  // Clear newline buffer
+    fgets(newnode->book_name, 100, stdin);
+    newnode->book_name[strcspn(newnode->book_name, "\n")] = 0; // Remove trailing newline
+
     if(head == NULL) {
         head = newnode;
         printf("List not found! Created a new list.");
@@ -83,7 +92,7 @@ void insertLast() {
         while(curr->next != NULL)
             curr = curr->next;
         curr->next = newnode;
-        printf("New node added successfully at the end of the list.");
+        printf("New book added successfully at the end of the list.");
     }
 }
 
@@ -97,14 +106,17 @@ void insertAt() {
     if(n == 0 || head == NULL) {
         insertFirst();
     } else {
-        printf("\nEnter the data: ");
-        scanf("%d", &newnode->data);
+        printf("\nEnter the book name: ");
+        getchar();  // Clear newline buffer
+        fgets(newnode->book_name, 100, stdin);
+        newnode->book_name[strcspn(newnode->book_name, "\n")] = 0; // Remove trailing newline
+
         curr = head;
         for(int i = 0; i < n - 1; i++)
             curr = curr->next;
         newnode->next = curr->next;
         curr->next = newnode;
-        printf("New node added successfully at index %d.", n);
+        printf("New book added successfully at index %d.", n);
     }
 }
 
@@ -114,12 +126,12 @@ void deleteFirst() {
     } else if(head->next == NULL) {
         free(head);
         head = NULL;
-        printf("\nFirst and only node deleted.");
+        printf("\nFirst and only book deleted.");
     } else {
         curr = head;
         head = head->next;
         free(curr);
-        printf("\nFirst node deleted.");
+        printf("\nFirst book deleted.");
     }
 }
 
@@ -129,14 +141,14 @@ void deleteLast() {
     } else if(head->next == NULL) {
         free(head);
         head = NULL;
-        printf("\nLast node is deleted. List is now empty.");
+        printf("\nLast book deleted. List is now empty.");
     } else {
         curr = head;
         while(curr->next->next != NULL)
             curr = curr->next;
         free(curr->next);
         curr->next = NULL;
-        printf("Last node is deleted.");
+        printf("Last book deleted.");
     }
 }
 
@@ -161,7 +173,7 @@ void deleteAt() {
             struct node *temp = curr->next;
             curr->next = temp->next;
             free(temp);
-            printf("Deleted node at index %d.", n);
+            printf("Deleted book at index %d.", n);
         }
     }
 }
@@ -170,9 +182,9 @@ void display() {
     if(head == NULL) {
         printf("\nList is empty.");
     } else {
-        printf("\nList is: ");
+        printf("\nBook list is: ");
         for(curr = head; curr != NULL; curr = curr->next)
-            printf("%d -> ", curr->data);
+            printf("%s -> ", curr->book_name);
         printf("NULL");
     }
 }
@@ -181,19 +193,33 @@ void search() {
     if(head == NULL) {
         printf("\nList is empty.");
     } else {
-        int search;
-        printf("\nEnter data to search: ");
-        scanf("%d", &search);
+        char search[100];
+        printf("\nEnter the book name to search: ");
+        getchar();  // Clear newline buffer
+        fgets(search, 100, stdin);
+        search[strcspn(search, "\n")] = 0;  // Remove trailing newline
+
         int i = 0;
         curr = head;
         while(curr != NULL) {
-            if(curr->data == search) {
-                printf("%d found at index %d.", search, i);
+            if(strcmp(curr->book_name, search) == 0) {
+                printf("'%s' found at index %d.", search, i);
                 return;
             } else {
                 curr = curr->next;
                 i++;
             }
         }
+        printf("Book not found.");
     }
+}
+
+void countBooks() {
+    int count = 0;
+    curr = head;
+    while(curr != NULL) {
+        count++;
+        curr = curr->next;
+    }
+    printf("\nTotal number of books: %d", count);
 }
