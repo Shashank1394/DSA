@@ -1,4 +1,4 @@
-// Singly Linked List
+// Singly Linked List - VS Code
 
 #include <stdio.h>
 #include <stdlib.h>
