@@ -54,7 +54,7 @@ void insertCar() {
 
     printf("\nEnter car model name: ");
     scanf(" %[^\n]", newnode->model_name);
-    printf("Enter price: ");
+    printf("Enter price: $");
     scanf("%d", &newnode->price);
     printf("Enter manufacturer: ");
     scanf(" %[^\n]", newnode->manufacturer);
@@ -119,7 +119,7 @@ void updatePrice() {
     if (curr == NULL) {
         printf("Model not found!");
     } else {
-        printf("Enter new price for %s: ", model);
+        printf("Enter new price for %s: $", model);
         scanf("%d", &curr->price);
         printf("Price updated successfully.");
     }
@@ -131,7 +131,7 @@ void display() {
     } else {
         printf("\nCar Inventory:");
         for (curr = head; curr != NULL; curr = curr->next) {
-            printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc", 
+            printf("\nModel: %s, Price: $%d, Manufacturer: %s, Engine Capacity: %dcc", 
                    curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
         }
     }
@@ -154,7 +154,7 @@ void searchByModel() {
     if (curr == NULL) {
         printf("Model not found!");
     } else {
-        printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc",
+        printf("\nModel: %s, Price: $%d, Manufacturer: %s, Engine Capacity: %dcc",
                curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
     }
 }
@@ -175,7 +175,7 @@ void listByPriceRange() {
     printf("\nCars within price range %d - %d:", min, max);
     for (curr = head; curr != NULL; curr = curr->next) {
         if (curr->price >= min && curr->price <= max) {
-            printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc", 
+            printf("\nModel: %s, Price: $%d, Manufacturer: %s, Engine Capacity: %dcc", 
                    curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
             found = 1;
         }
