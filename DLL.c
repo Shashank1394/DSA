@@ -1,210 +1,186 @@
-// Doubly Linked List
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct node {
-    int data;
+    char model_name[50];
+    int price;
+    char manufacturer[50];
+    int engine_capacity;
     struct node *next, *prev;
 };
 
 struct node *head = NULL;
 struct node *curr = NULL;
 
-void insertFirst();
-void insertLast();
-void insertAt();
-void deleteFirst();
-void deleteLast();
-void deleteAt();
+void insertCar();
+void deleteCar();
+void updatePrice();
 void display();
-void search();
+void searchByModel();
+void listByPriceRange();
 
 int main() {
     int ch;
     while(1) {
-        printf("\n\n- Doubly Linked List -");
-        printf("\n1. Insert First");
-        printf("\n2. Insert Last");
-        printf("\n3. Insert At Location");
-        printf("\n4. Delete First");
-        printf("\n5. Delete Last");
-        printf("\n6. Delete At Location");
-        printf("\n7. Display");
-        printf("\n8. Search");
-        printf("\n9. Exit");
+        printf("\n\n- Car Inventory System -");
+        printf("\n1. Insert New Car Model");
+        printf("\n2. Delete Car Model");
+        printf("\n3. Update Car Price");
+        printf("\n4. Display All Cars");
+        printf("\n5. Search Car by Model");
+        printf("\n6. List Cars by Price Range");
+        printf("\n7. Exit");
         printf("\nEnter your choice: ");
         scanf("%d", &ch);
 
         switch(ch) {
-            case 1: insertFirst(); break;
-            case 2: insertLast(); break;
-            case 3: insertAt(); break;
-            case 4: deleteFirst(); break;
-            case 5: deleteLast(); break;
-            case 6: deleteAt(); break;
-            case 7: display(); break;
-            case 8: search(); break;
-            case 9: printf("\nExiting..."); exit(0);
+            case 1: insertCar(); break;
+            case 2: deleteCar(); break;
+            case 3: updatePrice(); break;
+            case 4: display(); break;
+            case 5: searchByModel(); break;
+            case 6: listByPriceRange(); break;
+            case 7: printf("\nExiting..."); exit(0);
             default: printf("\nInvalid input! Try again...");
         }
-    } return 0;
+    }
+    return 0;
 }
 
-void insertFirst() {
+void insertCar() {
     struct node *newnode = (struct node *)malloc(sizeof(struct node));
     newnode->prev = newnode->next = NULL;
 
-    printf("\nEnter the data: ");
-    scanf("%d", &newnode->data);
+    printf("\nEnter car model name: ");
+    scanf(" %[^\n]", newnode->model_name);
+    printf("Enter price: ");
+    scanf("%d", &newnode->price);
+    printf("Enter manufacturer: ");
+    scanf(" %[^\n]", newnode->manufacturer);
+    printf("Enter engine capacity (in cc): ");
+    scanf("%d", &newnode->engine_capacity);
 
-    if(head == NULL) {
+    if (head == NULL) {
         head = newnode;
-        printf("List not found! Created a new list.");
+        printf("Added new car model as the first entry.");
     } else {
-        newnode->next = head;
-        head->prev = newnode;
-        head = newnode;
-        printf("New node added successfully at the beginning of the list.");
-    }
-}
-
-void insertLast() {
-    struct node *newnode = (struct node *)malloc(sizeof(struct node));
-    newnode->next = NULL;
-    
-    printf("\nEnter the data: ");
-    scanf("%d", &newnode->data);
-    
-    if(head == NULL) {
-        head = newnode;
-        printf("List not found! Created a new list.");
-    } else {
-        curr=head;
-        while(curr->next != NULL) 
+        curr = head;
+        while (curr->next != NULL) 
             curr = curr->next;
         curr->next = newnode;
         newnode->prev = curr;
-        printf("New node added successfully at the end of the list.");
+        printf("New car model added successfully at the end of the list.");
     }
 }
 
-void insertAt() {
-    struct node *newnode = (struct node *)malloc(sizeof(struct node));
-    newnode->next = NULL;
-
-    printf("Enter a location to insert: ");
-    int n; scanf("%d", &n);
-
-    if(n == 0 || head == NULL) {
-        insertFirst();
-    } else {
-        printf("\nEnter the data: ");
-        scanf("%d", &newnode->data);
-        curr = head;
-        for(int i = 0; i < n - 1; i++)
-            curr = curr->next;
-        newnode->next = curr->next;
-        curr->next->prev = newnode;
-        curr->next = newnode;
-        newnode->prev = curr;
-        printf("New node added successfully at index %d.", n);
+void deleteCar() {
+    if (head == NULL) {
+        printf("\nList is empty!");
+        return;
     }
-}
 
-void deleteFirst() {
-    if(head == NULL) {
-        printf("\nList not found!");
-    } else if (head->next == NULL) {
-        free(head);
-        head = NULL;
-        printf("\nFirst and only node deleted.");
+    char model[50];
+    printf("\nEnter model name to delete: ");
+    scanf(" %[^\n]", model);
+
+    curr = head;
+    while (curr != NULL && strcmp(curr->model_name, model) != 0)
+        curr = curr->next;
+
+    if (curr == NULL) {
+        printf("Model not found!");
     } else {
-        curr = head;
-        head = head->next;
-        head->prev = NULL;
+        if (curr->prev != NULL)
+            curr->prev->next = curr->next;
+        if (curr->next != NULL)
+            curr->next->prev = curr->prev;
+        if (curr == head)
+            head = curr->next;
         free(curr);
-        printf("\nFirst node deleted.");
+        printf("Car model %s deleted successfully.", model);
     }
 }
 
-void deleteLast() {
-    if(head == NULL) {
-        printf("\nList not found!");
-    } else if(head->next == NULL) {
-        free(head);
-        head = NULL;
-        printf("\nLast node is deleted. List is now empty.");
-    } else {
-        curr = head;
-        while(curr->next->next != NULL)
-            curr = curr->next;
-        free(curr->next);
-        curr->next = NULL;
-        printf("\nLast node is deleted.");
+void updatePrice() {
+    if (head == NULL) {
+        printf("\nList is empty!");
+        return;
     }
-}
 
-void deleteAt() {
-    if(head == NULL) {
-        printf("\nList not found!");
+    char model[50];
+    printf("\nEnter model name to update price: ");
+    scanf(" %[^\n]", model);
+
+    curr = head;
+    while (curr != NULL && strcmp(curr->model_name, model) != 0)
+        curr = curr->next;
+
+    if (curr == NULL) {
+        printf("Model not found!");
     } else {
-        printf("\nEnter an index to delete: ");
-        int n; scanf("%d", &n);
-
-        if(n == 0) {
-            deleteFirst();
-        } else {
-            curr = head;
-            for(int i = 0; i < n - 1; i++) {
-                if(curr->next == NULL) {
-                    printf("List index out of bounds.\n");
-                    return;
-                }
-                curr = curr->next;
-            }
-            struct node *temp = curr->next;
-            if(temp == NULL) {
-                printf("Index out of bounds.\n");
-                return;
-            }
-            if(temp->next != NULL)
-                temp->next->prev = curr;
-            curr->next = temp->next;
-            free(temp);
-            printf("Deleted node at index %d", n);
-        }
+        printf("Enter new price for %s: ", model);
+        scanf("%d", &curr->price);
+        printf("Price updated successfully.");
     }
 }
 
 void display() {
-    if(head == NULL) {
-        printf("\nList is empty.");
+    if (head == NULL) {
+        printf("\nNo cars in the inventory.");
     } else {
-        printf("\nList is: ");
-        for(curr = head; curr != NULL; curr = curr->next)
-            printf("%d -> ", curr->data);
-        printf("NULL");
+        printf("\nCar Inventory:");
+        for (curr = head; curr != NULL; curr = curr->next) {
+            printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc", 
+                   curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
+        }
     }
 }
 
-void search() {
-    if(head == NULL) {
+void searchByModel() {
+    if (head == NULL) {
         printf("\nList is empty.");
+        return;
+    }
+
+    char model[50];
+    printf("\nEnter model name to search: ");
+    scanf(" %[^\n]", model);
+
+    curr = head;
+    while (curr != NULL && strcmp(curr->model_name, model) != 0)
+        curr = curr->next;
+
+    if (curr == NULL) {
+        printf("Model not found!");
     } else {
-        int search;
-        printf("\nEnter data to search: ");
-        scanf("%d", &search);
-        int i = 0;
-        curr = head;
-        while(curr != NULL) {
-            if(curr->data == search) {
-                printf("%d found at index %d.", search, i);
-                return;
-            } else {
-                curr = curr->next;
-                i++;
-            }
+        printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc",
+               curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
+    }
+}
+
+void listByPriceRange() {
+    if (head == NULL) {
+        printf("\nList is empty.");
+        return;
+    }
+
+    int min, max;
+    printf("\nEnter minimum price: ");
+    scanf("%d", &min);
+    printf("Enter maximum price: ");
+    scanf("%d", &max);
+
+    int found = 0;
+    printf("\nCars within price range %d - %d:", min, max);
+    for (curr = head; curr != NULL; curr = curr->next) {
+        if (curr->price >= min && curr->price <= max) {
+            printf("\nModel: %s, Price: %d, Manufacturer: %s, Engine Capacity: %dcc", 
+                   curr->model_name, curr->price, curr->manufacturer, curr->engine_capacity);
+            found = 1;
         }
+    }
+    if (!found) {
+        printf("\nNo cars found within the specified price range.");
     }
 }
