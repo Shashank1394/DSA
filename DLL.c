@@ -166,13 +166,13 @@ void listByPriceRange() {
     }
 
     int min, max;
-    printf("\nEnter minimum price: ");
+    printf("\nEnter minimum price: $");
     scanf("%d", &min);
-    printf("Enter maximum price: ");
+    printf("Enter maximum price: $");
     scanf("%d", &max);
 
     int found = 0;
-    printf("\nCars within price range %d - %d:", min, max);
+    printf("\nCars within price range $%d - $%d:", min, max);
     for (curr = head; curr != NULL; curr = curr->next) {
         if (curr->price >= min && curr->price <= max) {
             printf("\nModel: %s, Price: $%d, Manufacturer: %s, Engine Capacity: %dcc", 
