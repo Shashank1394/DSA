@@ -7,7 +7,7 @@
 
 typedef struct {
     int top;
-    char items[MAX];
+    int items[MAX];
 } Stack;
 
 void initStack(Stack *s) {
@@ -22,7 +22,7 @@ int isFull(Stack *s) {
     return s->top == MAX - 1;
 }
 
-void push(Stack *s, char element) {
+void push(Stack *s, int element) {
     if (isFull(s)) {
         printf("Stack Overflow!\n");
         exit(EXIT_FAILURE);
@@ -30,7 +30,7 @@ void push(Stack *s, char element) {
     s->items[++s->top] = element;
 }
 
-char pop(Stack *s) {
+int pop(Stack *s) {
     if (isEmpty(s)) {
         printf("Stack Underflow!\n");
         exit(EXIT_FAILURE);
@@ -38,7 +38,7 @@ char pop(Stack *s) {
     return s->items[s->top--];
 }
 
-char peek(Stack *s) {
+int peek(Stack *s) {
     if (isEmpty(s)) {
         printf("Stack is empty!\n");
         exit(EXIT_FAILURE);
@@ -63,14 +63,20 @@ void infixToPostfix(const char *infix, char *postfix) {
 
     for (int i = 0; infix[i] != '\0'; i++) {
         char ch = infix[i];
-        if (isdigit(ch) || isalpha(ch)) 
-            postfix[j++] = ch;
-        else if (ch == '(')
+
+        if (isdigit(ch)) {
+            // Append the full number to postfix
+            while (isdigit(infix[i])) {
+                postfix[j++] = infix[i++];
+            }
+            postfix[j++] = ' '; // Add space as a delimiter
+            i--; // Adjust for the outer loop's increment
+        } else if (ch == '(') {
             push(&s, ch);
-        else if (ch == ')') {
+        } else if (ch == ')') {
             while (!isEmpty(&s) && peek(&s) != '(')
                 postfix[j++] = pop(&s);
-            pop(&s);
+            pop(&s); // Remove '('
         } else if (isOperator(ch)) {
             while (!isEmpty(&s) && precedence(peek(&s)) >= precedence(ch))
                 postfix[j++] = pop(&s);
@@ -89,17 +95,28 @@ int evaluatePostfix(const char *postfix) {
 
     for (int i = 0; postfix[i] != '\0'; i++) {
         char ch = postfix[i];
-        if (isdigit(ch))
-            push(&s, ch - '0');
-        else if (isOperator(ch)) {
+
+        if (isdigit(ch)) {
+            int num = 0;
+
+            // Extract the full number
+            while (isdigit(postfix[i])) {
+                num = num * 10 + (postfix[i] - '0');
+                i++;
+            }
+            push(&s, num);
+        } else if (isOperator(ch)) {
             int b = pop(&s);
             int a = pop(&s);
+
             switch (ch) {
                 case '+': push(&s, a + b); break;
                 case '-': push(&s, a - b); break;
                 case '*': push(&s, a * b); break;
                 case '/': push(&s, a / b); break;
-                default: printf("Invalid operator: %c\n", ch); exit(EXIT_FAILURE);
+                default: 
+                    printf("Invalid operator: %c\n", ch);
+                    exit(EXIT_FAILURE);
             }
         }
     }
@@ -109,7 +126,7 @@ int evaluatePostfix(const char *postfix) {
 int main() {
     char infix[MAX], postfix[MAX];
     printf("Enter an infix expression: ");
-    scanf("%s", infix);
+    scanf("%[^\n]s", infix);
 
     infixToPostfix(infix, postfix);
     printf("Postfix Expression: %s\n", postfix);
