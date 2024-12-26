@@ -41,12 +41,8 @@ int main() {
             case 3: display_books(); break;
             case 4: search_book(); break;
             case 5: count_books(); break;
-            case 6: 
-                printf("\nExiting...\n");
-                free_memory(); // Free allocated memory before exiting
-                return 0;
-            default: 
-                printf("\nInvalid input! Please enter a number between 1 and 6.\n");
+            case 6: printf("\nExiting...\n"); exit(0);
+            default: printf("\nInvalid input! Please enter a number between 1 and 6.\n");
         }
     }
     return 0;
@@ -69,8 +65,15 @@ void add_book() {
     printf("\nEnter the name of the book: ");
     fgets(newbook->book_name, 100, stdin);
     newbook->book_name[strcspn(newbook->book_name, "\n")] = '\0'; // Remove trailing newline
-    newbook->next = head;
-    head = newbook;
+    
+    if (head == NULL) {
+        head = newbook;
+    } else {
+        struct node *curr = head;
+        while (curr->next != NULL) 
+            curr = curr->next;
+        curr->next = newbook;
+    }
 
     printf("\nBook '%s' added successfully!\n", newbook->book_name);
 }
@@ -143,7 +146,7 @@ void search_book() {
 
     while (curr != NULL) {
         if (strcmp(curr->book_name, name) == 0) {
-            printf("\nBook '%s' found at index %d.\n", name, index);
+            printf("\nBook '%s' found at index %d.\n", name, index+1);
             return;
         }
         curr = curr->next;
@@ -162,15 +165,4 @@ void count_books() {
     }
 
     printf("\nTotal number of books: %d\n", count);
-}
-
-void free_memory() {
-    struct node *curr = head;
-    while (curr != NULL) {
-        struct node *temp = curr;
-        curr = curr->next;
-        free(temp->book_name);  // Free book name
-        free(temp);  // Free node
-    }
-    head = NULL;
 }
