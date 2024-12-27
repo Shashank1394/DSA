@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX 100
 
@@ -10,6 +11,33 @@ typedef struct {
     int items[MAX];
 } Stack;
 
+// Function prototypes
+void initStack(Stack *s);
+int isEmpty(Stack *s);
+int isFull(Stack *s);
+void push(Stack *s, int element);
+int pop(Stack *s);
+int peek(Stack *s);
+int precedence(char op);
+int isOperator(char ch);
+void infixToPostfix(const char *infix, char *postfix);
+int evaluatePostfix(const char *postfix);
+
+int main() {
+    char infix[MAX], postfix[MAX];
+    printf("Enter an infix expression: ");
+    scanf("%[^\n]", infix);
+
+    infixToPostfix(infix, postfix);
+    printf("Postfix Expression: %s\n", postfix);
+
+    int result = evaluatePostfix(postfix);
+    printf("Evaluation Result: %d\n", result);
+
+    return 0;
+}
+
+// Function implementations
 void initStack(Stack *s) {
     s->top = -1;
 }
@@ -48,12 +76,13 @@ int peek(Stack *s) {
 
 int precedence(char op) {
     if (op == '+' || op == '-') return 1;
-    if (op == '*' || op == '/') return 2;
+    if (op == '*' || op == '/' || op == '%') return 2;
+    if (op == '^') return 3;
     return 0;
 }
 
 int isOperator(char ch) {
-    return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+    return strchr("+-*/%^", ch) != NULL;
 }
 
 void infixToPostfix(const char *infix, char *postfix) {
@@ -114,6 +143,8 @@ int evaluatePostfix(const char *postfix) {
                 case '-': push(&s, a - b); break;
                 case '*': push(&s, a * b); break;
                 case '/': push(&s, a / b); break;
+                case '%': push(&s, a % b); break;
+                case '^': push(&s, (int)pow(a, b)); break; // Use pow() for exponentiation
                 default: 
                     printf("Invalid operator: %c\n", ch);
                     exit(EXIT_FAILURE);
@@ -121,18 +152,4 @@ int evaluatePostfix(const char *postfix) {
         }
     }
     return pop(&s);
-}
-
-int main() {
-    char infix[MAX], postfix[MAX];
-    printf("Enter an infix expression: ");
-    scanf("%[^\n]", infix);
-
-    infixToPostfix(infix, postfix);
-    printf("Postfix Expression: %s\n", postfix);
-
-    int result = evaluatePostfix(postfix);
-    printf("Evaluation Result: %d\n", result);
-
-    return 0;
 }
